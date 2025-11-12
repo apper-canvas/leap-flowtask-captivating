@@ -12,6 +12,19 @@
       "redirectOnDeny": "/login"
     }
   },
+  "/projects": {
+    "allow": {
+      "when": {
+        "conditions": [
+          {
+            "label": "User must be authenticated to access projects",
+            "rule": "authenticated"
+          }
+        ]
+      },
+      "redirectOnDeny": "/login"
+    }
+  },
   "/login": {
     "allow": {
       "when": {
