@@ -1,11 +1,11 @@
-import React, { useState, useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { format } from "date-fns";
 import ApperIcon from "@/components/ApperIcon";
-import Button from "@/components/atoms/Button";
 import Input from "@/components/atoms/Input";
-import Textarea from "@/components/atoms/Textarea";
+import Button from "@/components/atoms/Button";
 import Select from "@/components/atoms/Select";
+import Textarea from "@/components/atoms/Textarea";
 
 const TaskForm = ({ 
   task = null, 
@@ -14,66 +14,76 @@ const TaskForm = ({
   onCancel,
   isVisible = false 
 }) => {
-  const [formData, setFormData] = useState({
-    title: "",
-    description: "",
-    priority: "medium",
-    dueDate: "",
-    categoryId: ""
+const [formData, setFormData] = useState({
+    title_c: "",
+    description_c: "",
+    priority_c: "medium",
+    due_date_c: "",
+    category_id_c: ""
   });
   const [errors, setErrors] = useState({});
 
-  useEffect(() => {
+useEffect(() => {
     if (task) {
       setFormData({
-        title: task.title || "",
-        description: task.description || "",
-        priority: task.priority || "medium",
-        dueDate: task.dueDate ? format(new Date(task.dueDate), "yyyy-MM-dd'T'HH:mm") : "",
-        categoryId: task.categoryId?.toString() || ""
+        title_c: task.title_c || "",
+        description_c: task.description_c || "",
+        priority_c: task.priority_c || "medium",
+        due_date_c: task.due_date_c ? format(new Date(task.due_date_c), "yyyy-MM-dd'T'HH:mm") : "",
+        category_id_c: task.category_id_c?.Id?.toString() || task.category_id_c?.toString() || ""
       });
     } else {
       setFormData({
-        title: "",
-        description: "",
-        priority: "medium",
-        dueDate: "",
-        categoryId: categories.length > 0 ? categories[0].Id.toString() : ""
+        title_c: "",
+        description_c: "",
+        priority_c: "medium",
+        due_date_c: "",
+        category_id_c: categories.length > 0 ? categories[0].Id.toString() : ""
       });
     }
     setErrors({});
   }, [task, categories, isVisible]);
 
+const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setFormData(prev => ({ ...prev, [name]: value }));
+    
+    // Clear error when user starts typing
+    if (errors[name]) {
+      setErrors(prev => ({ ...prev, [name]: "" }));
+    }
+  };
+
   const validateForm = () => {
     const newErrors = {};
-    if (!formData.title.trim()) {
-      newErrors.title = "Title is required";
+
+    if (!formData.title_c.trim()) {
+      newErrors.title_c = "Title is required";
     }
-    if (!formData.categoryId) {
-      newErrors.categoryId = "Category is required";
+
+    if (formData.due_date_c) {
+      const dueDate = new Date(formData.due_date_c);
+      if (dueDate <= new Date()) {
+        newErrors.due_date_c = "Due date must be in the future";
+      }
     }
+
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleSubmit = (e) => {
+const handleSubmit = (e) => {
     e.preventDefault();
+    
     if (!validateForm()) return;
 
     const submitData = {
       ...formData,
-      categoryId: parseInt(formData.categoryId),
-      dueDate: formData.dueDate ? new Date(formData.dueDate).toISOString() : null
+      category_id_c: parseInt(formData.category_id_c),
+      due_date_c: formData.due_date_c ? new Date(formData.due_date_c).toISOString() : null
     };
 
     onSubmit(submitData);
-  };
-
-  const handleInputChange = (field, value) => {
-    setFormData(prev => ({ ...prev, [field]: value }));
-    if (errors[field]) {
-      setErrors(prev => ({ ...prev, [field]: "" }));
-    }
   };
 
   if (!isVisible) return null;
@@ -108,60 +118,93 @@ const TaskForm = ({
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-4">
-          <Input
-            label="Task Title"
-            value={formData.title}
-            onChange={(e) => handleInputChange("title", e.target.value)}
-            placeholder="Enter task title..."
-            error={errors.title}
-            autoFocus
-          />
+          <div>
+            <label htmlFor="title_c" className="block text-sm font-medium text-gray-700 mb-1">
+              Title
+            </label>
+            <Input
+              id="title_c"
+              name="title_c"
+              value={formData.title_c}
+              onChange={handleInputChange}
+              placeholder="Enter task title"
+              className={errors.title_c ? "border-red-500" : ""}
+            />
+            {errors.title_c && (
+              <p className="text-red-500 text-sm mt-1">{errors.title_c}</p>
+            )}
+          </div>
 
-          <Textarea
-            label="Description"
-            value={formData.description}
-            onChange={(e) => handleInputChange("description", e.target.value)}
-            placeholder="Add a description..."
-            rows={3}
-          />
+          <div>
+            <label htmlFor="description_c" className="block text-sm font-medium text-gray-700 mb-1">
+              Description
+            </label>
+            <Textarea
+              id="description_c"
+              name="description_c"
+              value={formData.description_c}
+              onChange={handleInputChange}
+              placeholder="Enter task description"
+              rows="3"
+            />
+          </div>
 
-          <div className="grid grid-cols-2 gap-4">
+          <div>
+            <label htmlFor="priority_c" className="block text-sm font-medium text-gray-700 mb-1">
+              Priority
+            </label>
             <Select
-              label="Priority"
-              value={formData.priority}
-              onChange={(e) => handleInputChange("priority", e.target.value)}
+              id="priority_c"
+              name="priority_c"
+              value={formData.priority_c}
+              onChange={handleInputChange}
             >
               <option value="low">Low Priority</option>
               <option value="medium">Medium Priority</option>
               <option value="high">High Priority</option>
             </Select>
+          </div>
 
+          <div>
+            <label htmlFor="category_id_c" className="block text-sm font-medium text-gray-700 mb-1">
+              Category
+            </label>
             <Select
-              label="Category"
-              value={formData.categoryId}
-              onChange={(e) => handleInputChange("categoryId", e.target.value)}
-              error={errors.categoryId}
+              id="category_id_c"
+              name="category_id_c"
+              value={formData.category_id_c}
+              onChange={handleInputChange}
             >
-              <option value="" disabled>Select category</option>
+              <option value="">Select Category</option>
               {categories.map((category) => (
                 <option key={category.Id} value={category.Id.toString()}>
-                  {category.name}
+                  {category.name_c}
                 </option>
               ))}
             </Select>
           </div>
 
-          <Input
-            label="Due Date (Optional)"
-            type="datetime-local"
-            value={formData.dueDate}
-            onChange={(e) => handleInputChange("dueDate", e.target.value)}
-          />
+          <div>
+            <label htmlFor="due_date_c" className="block text-sm font-medium text-gray-700 mb-1">
+              Due Date
+            </label>
+            <Input
+              type="datetime-local"
+              id="due_date_c"
+              name="due_date_c"
+              value={formData.due_date_c}
+              onChange={handleInputChange}
+              className={errors.due_date_c ? "border-red-500" : ""}
+            />
+            {errors.due_date_c && (
+              <p className="text-red-500 text-sm mt-1">{errors.due_date_c}</p>
+            )}
+          </div>
 
-          <div className="flex gap-3 pt-4">
+          <div className="flex space-x-3 pt-4">
             <Button
               type="button"
-              variant="secondary"
+              variant="outline"
               onClick={onCancel}
               className="flex-1"
             >
@@ -169,11 +212,9 @@ const TaskForm = ({
             </Button>
             <Button
               type="submit"
-              variant="primary"
               className="flex-1"
             >
-              <ApperIcon name={task ? "Save" : "Plus"} className="w-4 h-4 mr-2" />
-              {task ? "Save Changes" : "Create Task"}
+              {task ? "Update Task" : "Create Task"}
             </Button>
           </div>
         </form>

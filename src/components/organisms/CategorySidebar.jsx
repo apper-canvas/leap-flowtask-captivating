@@ -23,8 +23,11 @@ const CategorySidebar = ({
       color: "#4F46E5",
       count: getTotalTasks()
     },
-    ...categories.map(category => ({
+...categories.map(category => ({
       ...category,
+      name: category.name_c,
+      color: category.color_c,
+      icon: category.icon_c,
       count: taskCounts[category.Id] || 0
     }))
   ];

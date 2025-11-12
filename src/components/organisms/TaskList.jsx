@@ -1,17 +1,17 @@
-import React, { useState, useEffect } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import React, { useEffect, useState } from "react";
+import { AnimatePresence, motion } from "framer-motion";
 import { toast } from "react-toastify";
+import { taskService } from "@/services/api/taskService";
+import { categoryService } from "@/services/api/categoryService";
 import ApperIcon from "@/components/ApperIcon";
-import Button from "@/components/atoms/Button";
-import TaskCard from "@/components/organisms/TaskCard";
-import TaskForm from "@/components/organisms/TaskForm";
-import SearchBar from "@/components/molecules/SearchBar";
-import FilterBar from "@/components/molecules/FilterBar";
 import Loading from "@/components/ui/Loading";
 import ErrorView from "@/components/ui/ErrorView";
 import Empty from "@/components/ui/Empty";
-import { taskService } from "@/services/api/taskService";
-import { categoryService } from "@/services/api/categoryService";
+import SearchBar from "@/components/molecules/SearchBar";
+import FilterBar from "@/components/molecules/FilterBar";
+import TaskForm from "@/components/organisms/TaskForm";
+import TaskCard from "@/components/organisms/TaskCard";
+import Button from "@/components/atoms/Button";
 
 const TaskList = () => {
   const [tasks, setTasks] = useState([]);
@@ -64,16 +64,20 @@ const TaskList = () => {
     setShowForm(true);
   };
 
-  const handleSubmitTask = async (taskData) => {
+const handleSubmitTask = async (taskData) => {
     try {
       if (editingTask) {
         const updatedTask = await taskService.update(editingTask.Id, taskData);
-        setTasks(prev => prev.map(t => t.Id === editingTask.Id ? updatedTask : t));
-        toast.success("Task updated successfully!");
+        if (updatedTask) {
+          setTasks(prev => prev.map(t => t.Id === editingTask.Id ? updatedTask : t));
+          toast.success("Task updated successfully!");
+        }
       } else {
         const newTask = await taskService.create(taskData);
-        setTasks(prev => [...prev, newTask]);
-        toast.success("Task created successfully!");
+        if (newTask) {
+          setTasks(prev => [...prev, newTask]);
+          toast.success("Task created successfully!");
+        }
       }
       setShowForm(false);
       setEditingTask(null);
@@ -82,76 +86,83 @@ const TaskList = () => {
     }
   };
 
-  const handleToggleComplete = async (taskId) => {
+const handleToggleComplete = async (taskId) => {
     try {
       const task = tasks.find(t => t.Id === taskId);
       if (!task) return;
 
-      if (task.completed) {
+      if (task.completed_c) {
         const updatedTask = await taskService.markIncomplete(taskId);
-        setTasks(prev => prev.map(t => t.Id === taskId ? updatedTask : t));
-        toast.success("Task restored!");
+        if (updatedTask) {
+          setTasks(prev => prev.map(t => t.Id === taskId ? updatedTask : t));
+          toast.success("Task restored!");
+        }
       } else {
         const updatedTask = await taskService.markComplete(taskId);
-        setTasks(prev => prev.map(t => t.Id === taskId ? updatedTask : t));
-        toast.success("Task completed! 🎉");
+        if (updatedTask) {
+          setTasks(prev => prev.map(t => t.Id === taskId ? updatedTask : t));
+          toast.success("Task completed! 🎉");
+        }
       }
     } catch (err) {
       toast.error(err.message || "Failed to update task");
     }
   };
 
-  const handleDeleteTask = async (taskId) => {
+const handleDeleteTask = async (taskId) => {
     if (!window.confirm("Are you sure you want to delete this task?")) return;
     
     try {
-      await taskService.delete(taskId);
-      setTasks(prev => prev.filter(t => t.Id !== taskId));
-      toast.success("Task deleted successfully");
+      const success = await taskService.delete(taskId);
+      if (success) {
+        setTasks(prev => prev.filter(t => t.Id !== taskId));
+        toast.success("Task deleted successfully");
+      }
     } catch (err) {
       toast.error(err.message || "Failed to delete task");
     }
   };
 
-  const getFilteredTasks = () => {
+const getFilteredTasks = () => {
     return tasks.filter(task => {
       // Search filter
       if (searchQuery) {
         const query = searchQuery.toLowerCase();
-        if (!task.title.toLowerCase().includes(query) && 
-            !task.description?.toLowerCase().includes(query)) {
+        if (!task.title_c?.toLowerCase().includes(query) && 
+            !task.description_c?.toLowerCase().includes(query)) {
           return false;
         }
       }
 
       // Status filter
-      if (statusFilter === "active" && task.completed) return false;
-      if (statusFilter === "completed" && !task.completed) return false;
+      if (statusFilter === "active" && task.completed_c) return false;
+      if (statusFilter === "completed" && !task.completed_c) return false;
 
       // Priority filter
-      if (priorityFilter !== "all" && task.priority !== priorityFilter) return false;
+      if (priorityFilter !== "all" && task.priority_c !== priorityFilter) return false;
 
       // Category filter
-      if (selectedCategory && task.categoryId !== selectedCategory) return false;
-
+      if (selectedCategory && task.category_id_c?.Id !== selectedCategory) return false;
       return true;
     });
   };
 
-  const filteredTasks = getFilteredTasks();
-  const activeTasks = filteredTasks.filter(task => !task.completed);
-  const completedTasks = filteredTasks.filter(task => task.completed);
-
+const filteredTasks = getFilteredTasks();
+  
   const getTaskCounts = () => {
     const counts = {};
     categories.forEach(category => {
-      counts[category.Id] = tasks.filter(task => task.categoryId === category.Id).length;
+      counts[category.Id] = tasks.filter(task => task.category_id_c?.Id === category.Id).length;
     });
     return counts;
   };
 
+  const activeTasks = filteredTasks.filter(task => !task.completed_c);
+  const completedTasks = filteredTasks.filter(task => task.completed_c);
+  const taskCounts = getTaskCounts();
+
   const statusFilters = [
-    { value: "all", label: "All", count: filteredTasks.length },
+    { value: "all", label: "All Tasks" },
     { value: "active", label: "Active", count: activeTasks.length },
     { value: "completed", label: "Completed", count: completedTasks.length },
   ];
@@ -228,11 +239,11 @@ const TaskList = () => {
                 Active Tasks ({activeTasks.length})
               </h2>
               <AnimatePresence mode="popLayout">
-                {activeTasks.map((task) => (
+{activeTasks.map((task) => (
                   <TaskCard
                     key={task.Id}
                     task={task}
-                    category={categories.find(c => c.Id === task.categoryId)}
+                    category={categories.find(c => c.Id === (task.category_id_c?.Id || task.category_id_c))}
                     onToggleComplete={handleToggleComplete}
                     onEdit={handleEditTask}
                     onDelete={handleDeleteTask}
@@ -266,10 +277,10 @@ const TaskList = () => {
                     className="space-y-4"
                   >
                     {completedTasks.map((task) => (
-                      <TaskCard
+<TaskCard
                         key={task.Id}
                         task={task}
-                        category={categories.find(c => c.Id === task.categoryId)}
+                        category={categories.find(c => c.Id === (task.category_id_c?.Id || task.category_id_c))}
                         onToggleComplete={handleToggleComplete}
                         onEdit={handleEditTask}
                         onDelete={handleDeleteTask}
