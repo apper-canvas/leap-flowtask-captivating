@@ -79,23 +79,9 @@
           {
             "label": "Password reset is public",
             "rule": "public"
-          },
-"redirectOnDeny",":", "/login",
-      "excludeRedirectQuery",": false"]
-    }
-  },
-  "/projects": {
-    "allow": {
-      "when": {
-        "conditions": [
-          {
-            "label": "User must be logged in to view projects",
-            "rule": "authenticated"
           }
         ]
-      },
-      "redirectOnDeny": "/login",
-      "excludeRedirectQuery": false
+      }
     }
   }
-}}
+}

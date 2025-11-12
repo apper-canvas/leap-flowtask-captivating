@@ -1,12 +1,10 @@
 import React, { useState } from "react";
 import { Outlet } from "react-router-dom";
-import { AnimatePresence, motion } from "framer-motion";
-import { cn } from "@/utils/cn";
+import { motion, AnimatePresence } from "framer-motion";
 import { useAuth } from "@/layouts/Root";
 import ApperIcon from "@/components/ApperIcon";
-import Dashboard from "@/components/pages/Dashboard";
-import CategorySidebar from "@/components/organisms/CategorySidebar";
 import Button from "@/components/atoms/Button";
+import CategorySidebar from "@/components/organisms/CategorySidebar";
 const Layout = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const { logout } = useAuth();
@@ -70,13 +68,14 @@ const Layout = () => {
                   <span className="font-medium">Filter & Sort</span>
                 </button>
               </div>
-<div className="text-sm font-medium text-gray-500 uppercase tracking-wider mb-4 mt-8">
+
+              <div className="text-sm font-medium text-gray-500 uppercase tracking-wider mb-4 mt-8">
                 Views
               </div>
               <div className="space-y-1">
-                <button className="w-full flex items-center gap-3 px-4 py-3 text-gray-600 hover:bg-gray-50 hover:text-gray-900 rounded-lg transition-colors duration-200">
+                <button className="w-full flex items-center gap-3 px-4 py-3 text-primary-600 bg-primary-50 rounded-lg font-medium">
                   <ApperIcon name="List" className="w-5 h-5" />
-                  <span className="font-medium">All Tasks</span>
+                  <span>All Tasks</span>
                   <span className="ml-auto bg-primary-100 text-primary-600 px-2 py-1 rounded-full text-xs font-medium">
                     8
                   </span>
@@ -204,13 +203,14 @@ const Layout = () => {
                         <span className="font-medium">Filter & Sort</span>
                       </button>
                     </div>
-<div className="text-sm font-medium text-gray-500 uppercase tracking-wider mb-4">
+
+                    <div className="text-sm font-medium text-gray-500 uppercase tracking-wider mb-4 mt-8">
                       Views
                     </div>
                     <div className="space-y-1">
-                      <button className="w-full flex items-center gap-3 px-4 py-3 text-gray-600 hover:bg-gray-50 hover:text-gray-900 rounded-lg transition-colors duration-200">
+                      <button className="w-full flex items-center gap-3 px-4 py-3 text-primary-600 bg-primary-50 rounded-lg font-medium">
                         <ApperIcon name="List" className="w-5 h-5" />
-                        <span className="font-medium">All Tasks</span>
+                        <span>All Tasks</span>
                         <span className="ml-auto bg-primary-100 text-primary-600 px-2 py-1 rounded-full text-xs font-medium">
                           8
                         </span>
@@ -264,8 +264,8 @@ const Layout = () => {
                         <span className="font-medium">Personal</span>
                         <span className="ml-auto bg-gray-100 text-gray-600 px-2 py-1 rounded-full text-xs font-medium">
                           2
-</span>
-                      </button>
+                        </span>
+</button>
                     </div>
 
                     <div className="mt-8 pt-4 border-t border-gray-200">

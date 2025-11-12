@@ -7,7 +7,6 @@ import Layout from "@/components/organisms/Layout";
 
 // Lazy load components
 const Dashboard = lazy(() => import("@/components/pages/Dashboard"));
-const Projects = lazy(() => import("@/components/pages/Projects"));
 const NotFound = lazy(() => import("@/components/pages/NotFound"));
 const Login = lazy(() => import("@/components/pages/Login"));
 const Signup = lazy(() => import("@/components/pages/Signup"));
@@ -15,6 +14,7 @@ const Callback = lazy(() => import("@/components/pages/Callback"));
 const ErrorPage = lazy(() => import("@/components/pages/ErrorPage"));
 const ResetPassword = lazy(() => import("@/components/pages/ResetPassword"));
 const PromptPassword = lazy(() => import("@/components/pages/PromptPassword"));
+
 const createRoute = ({
   path,
   index,
@@ -61,10 +61,6 @@ const mainRoutes = [
   createRoute({
     index: true,
     element: <Dashboard />,
-  }),
-  createRoute({
-    path: "projects",
-    element: <Projects />,
   }),
   createRoute({
     path: "*",
