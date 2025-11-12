@@ -11,7 +11,7 @@ import Empty from "@/components/ui/Empty";
 import Input from "@/components/atoms/Input";
 import Button from "@/components/atoms/Button";
 import Select from "@/components/atoms/Select";
-import StatusBadge from "@/components/ui/StatusBadge";
+import StatusBadge from "@/components/molecules/StatusBadge";
 
 const Projects = () => {
   const [projects, setProjects] = useState([]);
