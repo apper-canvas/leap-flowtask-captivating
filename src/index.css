@@ -49,11 +49,11 @@ body {
 }
 
 .Toastify__toast--error .Toastify__progress-bar {
-  background: #EF4444;
+  background: #DC2626;
 }
 
 .Toastify__toast--info .Toastify__progress-bar {
-  background: #3B82F6;
+  background: #DC2626;
 }
 
 /* Scrollbar customization */
@@ -66,12 +66,12 @@ body {
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #d1d5db;
+  background: #e5e7eb;
   border-radius: 3px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #9ca3af;
+  background: #fca5a5;
 }
 
 /* Custom animations */

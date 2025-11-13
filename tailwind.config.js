@@ -6,20 +6,20 @@ export default {
   ],
   theme: {
     extend: {
-      colors: {
+colors: {
         primary: {
-          50: '#eef2ff',
-          100: '#e0e7ff',
-          500: '#4F46E5',
-          600: '#4338ca',
-          700: '#3730a3',
+          50: '#fef2f2',
+          100: '#fee2e2',
+          500: '#DC2626',
+          600: '#b91c1c',
+          700: '#991b1b',
         },
         secondary: {
-          50: '#faf5ff',
-          100: '#f3e8ff',
-          500: '#7C3AED',
-          600: '#7c2d12',
-          700: '#6b21a8',
+          50: '#fff7ed',
+          100: '#ffedd5',
+          500: '#EA580C',
+          600: '#c2410c',
+          700: '#9a3412',
         },
         amber: {
           50: '#fffbeb',
