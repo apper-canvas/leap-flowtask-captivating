@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { format } from "date-fns";
 import ApperIcon from "@/components/ApperIcon";
-import ApperFileFieldComponent from "@/components/ApperFileFieldComponent";
+import ApperFileFieldComponent from "@/components/atoms/FileUploader/ApperFileFieldComponent";
 import Textarea from "@/components/atoms/Textarea";
 import Select from "@/components/atoms/Select";
 import Button from "@/components/atoms/Button";
