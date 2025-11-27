@@ -2,10 +2,11 @@ import React, { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { format } from "date-fns";
 import ApperIcon from "@/components/ApperIcon";
-import Input from "@/components/atoms/Input";
-import Button from "@/components/atoms/Button";
-import Select from "@/components/atoms/Select";
+import ApperFileFieldComponent from "@/components/ApperFileFieldComponent";
 import Textarea from "@/components/atoms/Textarea";
+import Select from "@/components/atoms/Select";
+import Button from "@/components/atoms/Button";
+import Input from "@/components/atoms/Input";
 
 const TaskForm = ({ 
   task = null, 
@@ -21,6 +22,7 @@ const [formData, setFormData] = useState({
     due_date_c: "",
     category_id_c: ""
   });
+  const [uploadedFiles, setUploadedFiles] = useState([]);
   const [errors, setErrors] = useState({});
 
 useEffect(() => {
@@ -42,6 +44,7 @@ useEffect(() => {
       });
     }
     setErrors({});
+    setUploadedFiles([]);
   }, [task, categories, isVisible]);
 
 const handleInputChange = (e) => {
@@ -52,6 +55,10 @@ const handleInputChange = (e) => {
     if (errors[name]) {
       setErrors(prev => ({ ...prev, [name]: "" }));
     }
+  };
+
+  const handleFileStateChange = (files) => {
+    setUploadedFiles(files || []);
   };
 
   const validateForm = () => {
@@ -72,7 +79,7 @@ const handleInputChange = (e) => {
     return Object.keys(newErrors).length === 0;
   };
 
-const handleSubmit = (e) => {
+const handleSubmit = async (e) => {
     e.preventDefault();
     
     if (!validateForm()) return;
@@ -80,7 +87,8 @@ const handleSubmit = (e) => {
     const submitData = {
       ...formData,
       category_id_c: parseInt(formData.category_id_c),
-      due_date_c: formData.due_date_c ? new Date(formData.due_date_c).toISOString() : null
+      due_date_c: formData.due_date_c ? new Date(formData.due_date_c).toISOString() : null,
+      files: uploadedFiles
     };
 
     onSubmit(submitData);
@@ -200,7 +208,24 @@ const handleSubmit = (e) => {
               <p className="text-red-500 text-sm mt-1">{errors.due_date_c}</p>
             )}
           </div>
-
+{/* File Upload Section */}
+          <div className="space-y-2">
+            <label className="block text-sm font-medium text-gray-700">
+              Attachments
+            </label>
+            <ApperFileFieldComponent
+              elementId="task-files"
+              config={{
+                fieldKey: 'task-files',
+                fieldName: 'file_c',
+                tableName: 'task_files_c',
+                apperProjectId: import.meta.env.VITE_APPER_PROJECT_ID,
+                apperPublicKey: import.meta.env.VITE_APPER_PUBLIC_KEY,
+                existingFiles: uploadedFiles,
+                fileCount: uploadedFiles.length
+              }}
+            />
+          </div>
           <div className="flex space-x-3 pt-4">
             <Button
               type="button"

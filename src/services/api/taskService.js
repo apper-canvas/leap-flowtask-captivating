@@ -9,7 +9,7 @@ export const taskService = {
         throw new Error("ApperClient not available");
       }
 
-      const response = await apperClient.fetchRecords('tasks_c', {
+const response = await apperClient.fetchRecords('tasks_c', {
         fields: [
           {"field": {"Name": "title_c"}},
           {"field": {"Name": "description_c"}},
@@ -43,7 +43,7 @@ export const taskService = {
       }
 
       const response = await apperClient.getRecordById('tasks_c', parseInt(id), {
-        fields: [
+fields: [
           {"field": {"Name": "title_c"}},
           {"field": {"Name": "description_c"}},
           {"field": {"Name": "priority_c"}},
@@ -68,7 +68,7 @@ export const taskService = {
     }
   },
 
-  async create(taskData) {
+async create(taskData) {
     try {
       const apperClient = getApperClient();
       if (!apperClient) {
@@ -107,7 +107,28 @@ export const taskService = {
             if (record.message) toast.error(record.message);
           });
         }
-        return successful.length > 0 ? successful[0].data : null;
+        
+        const createdTask = successful.length > 0 ? successful[0].data : null;
+        
+        // Handle file uploads if files were provided
+        if (createdTask && taskData.files && taskData.files.length > 0) {
+          const { taskFileService } = await import('./taskFileService');
+          
+          // Get files from ApperFileFieldComponent
+          const { ApperFileUploader } = window.ApperSDK;
+          const files = await ApperFileUploader.FileField.getFiles('task-files') || taskData.files;
+          
+          // Create file records for each uploaded file
+          for (const file of files) {
+            await taskFileService.create({
+              task_id_c: createdTask.Id,
+              file_name_c: file.Name || file.name,
+              file_c: [file]
+            });
+          }
+        }
+        
+        return createdTask;
       }
       return null;
     } catch (error) {
